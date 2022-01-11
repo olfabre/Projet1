@@ -54,10 +54,8 @@ int main()
   // Débuter la partie ?
   _fonction::debuterNouvellePartie(joueur.modeJeux, joueur.etapeJeux, joueur.nombrePartie);
 
-  //
-
   // Initialisation nouvelle partie
-  _fonction::initialisationJeu(joueur.modeJeux, joueur.forceJeu, joueur.chronoStart, joueur.chronoEnd);
+  _fonction::initialisationJeu(joueur.modeJeux, joueur.forceJeu, joueur.chronoStart, joueur.chronoEnd, joueur.etapeJeux, joueur.indicateurSante, joueur.pseudo, joueur.nombrePartie, joueur.nombreJocker, joueur.totalScore);
 
   // Détruire toutes les allocations dynamiques
   //  Fin de la fonction principale

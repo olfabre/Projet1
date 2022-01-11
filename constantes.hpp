@@ -21,5 +21,6 @@ namespace _constante
   const int nbrLigneGrilleJeu = 8;                // Constante du nombre de lignes dans une grille du jeu
   const bool grilleHidden = true;                 // Grille privée (non affichée)
   const bool grillePublic = false;                // Grille public (affichée)
+  const int mineCodeMarquage = 9;                 // Marquage case minée
 }
 #endif
