@@ -37,6 +37,15 @@ namespace _fonction
   }
 
   //
+  void detructionAllocationMemoire(_structure::grille &uneGrille1, _structure::grille &uneGrille2)
+  {
+
+    // Destruction Alloc Mémoire
+    delete[] uneGrille1.Tableau;
+    delete[] uneGrille2.Tableau;
+  }
+
+  //
   void quitterJeu(int &etapeJeux)
   {
     etapeJeux = _constante::finJeux;
@@ -45,13 +54,22 @@ namespace _fonction
   }
 
   //
-  int calculerTempsJeux(time_t tempsDepart)
+  double calculerTempsJeux(time_t tempsDepart)
   {
     int nbrseconds;
     time_t maintenant;
     maintenant = time(0);
     // nbrseconds = maintenant - tempsDepart;
-    return (maintenant - tempsDepart);
+    return ((maintenant - tempsDepart) / 60);
+  }
+
+  //
+  void utiliserJocker(int &nombreJocker)
+  {
+    if (nombreJocker == 1)
+    {
+      cout << "ok";
+    }
   }
 
   // Afficher le menu du joueur
@@ -663,7 +681,7 @@ namespace _fonction
     for (int i = 0; i < uneGrille.nbrLigne; i++)
     {
       for (int j = 0; j < uneGrille.nbrColonne; j++)
-        uneGrille.Tableau[i][j] = 00;
+        uneGrille.Tableau[i][j] = 0;
     }
   }
 
@@ -741,9 +759,11 @@ namespace _fonction
       {
       case _constante::actionQuitter:
         _fonction::quitterJeu(etapeJeux);
+        _fonction::detructionAllocationMemoire((*grilleJoueur), (*grilleMachine));
         break;
-      case 0:
-
+      case _constante::actionUtiliserJocker:
+        _fonction::utiliserJocker(nombreJocker);
+        continue;
         break;
       default:
         break;
