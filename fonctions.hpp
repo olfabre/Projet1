@@ -68,6 +68,7 @@ namespace _fonction
   {
     if (nombreJocker == 1)
     {
+
       cout << "ok";
     }
   }
@@ -343,6 +344,47 @@ namespace _fonction
     // uneGrille.Tableau[0][7] = 9;
   }
 
+// Retourner la valeur d'un case d'un grille
+int retournerValeurCase(_structure::grille &uneGrille, int ligne, int colonne)
+{
+
+
+  
+  return 0;
+}
+
+
+//
+void creuserUneCase(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine) 
+{
+
+int ligneAction;
+int colonneAction;
+int valeur;
+
+do
+{
+  cout << "Donnez le numéro de la ligne entre 0 et " << uneGrilleJoueur.nbrLigne << "inclus > ";
+cin >> ligneAction;
+} while (ligneAction < 0 || ligneAction > uneGrilleJoueur.nbrLigne);
+
+do
+{
+  cout << "Donnez le numéro de colonne entre 0 et " << uneGrilleJoueur.nbrColonne << " > ";
+cin >> colonneAction;
+} while (colonneAction < 0 || colonneAction > uneGrilleJoueur.nbrColonne);
+
+
+// Retourner la valeur d'une case d'une grille
+valeur = retournerValeurCase(uneGrilleMachine, ligneAction, colonneAction);
+
+
+//uneGrilleMachine.Tableau[][]
+
+
+
+}
+
   // Affichage d'une grille Joueur
   void affichageGrilleJoueur(_structure::grille &uneGrille)
   {
@@ -417,15 +459,23 @@ namespace _fonction
         if (i % 1 == 0 && j == 0)
           cout << i + 1 << "|";
         cout << "\t";
-        // Pas de mine
-        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        
+        if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseInitiale)           
         {
-          cout << "💣";
-        }
-        else
+          cout << "🟦";
+        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseCreusee)
         {
-          cout << uneGrille.Tableau[i][j];
-        }
+          cout << "🟩";
+        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseMinee)
+        {
+          cout << "🟥";
+        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseSansMineDrapeauPresent)
+        {
+          cout << "⬇️";
+        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseAvecMineDrapeauPresent)
+        {
+          cout << "⬇️";
+        } 
 
         cout << "\t";
         cout << "|";
@@ -484,11 +534,14 @@ namespace _fonction
   }
 
   // Affichage d'une grille Machine
-  void affichageGrilleMachine(_structure::grille &uneGrille)
+  void affichageGrilleMachine(_structure::grille &uneGrille, bool indice = true)
   {
 
+
+if (indice){
     // Calcul des indices de présence voisine de mines
     _fonction::calculerIndicesPresenceMine(uneGrille);
+}
 
     cout << "++ GRILLE MACHINE ++";
     cout << endl;
@@ -563,11 +616,21 @@ namespace _fonction
 
         if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
-          cout << "💣";
+          cout << "❌";
         }
         else
         {
-          cout << uneGrille.Tableau[i][j];
+          if (uneGrille.Tableau[i][j] == 0) cout << "0️⃣";
+          if (uneGrille.Tableau[i][j] == 1) cout << "1️⃣";
+          if (uneGrille.Tableau[i][j] == 2) cout << "2️⃣";
+          if (uneGrille.Tableau[i][j] == 3) cout << "3️⃣";
+          if (uneGrille.Tableau[i][j] == 4) cout << "4️⃣";
+          if (uneGrille.Tableau[i][j] == 5) cout << "5️⃣";
+          if (uneGrille.Tableau[i][j] == 6) cout << "6️⃣";
+          if (uneGrille.Tableau[i][j] == 7) cout << "7️⃣";
+          if (uneGrille.Tableau[i][j] == 8) cout << "8️⃣";
+          if (uneGrille.Tableau[i][j] == 9) cout << "9️⃣";
+          // cout << uneGrille.Tableau[i][j];
         }
 
         cout << "\t";
@@ -719,8 +782,6 @@ namespace _fonction
     // Instance de la structure Grille en une grilleJoueur qui comportera tous les éléments visibles et réels de la partie
     _structure::grille *grilleJoueur = _fonction::instancierGrille(_constante::nbrColonneGrilleJeu, _constante::nbrLigneGrilleJeu, _constante::grillePublic);
 
-    //(*grilleMachine).Tableau[1][5] = 14;
-    //(*grilleJoueur).Tableau[1][5] = 12;
 
     // Initialiser la grilleMachine
     initialiserZeroGrille(*grilleMachine);
@@ -765,6 +826,17 @@ namespace _fonction
         _fonction::utiliserJocker(nombreJocker);
         continue;
         break;
+       case _constante::actionCreuser:
+        _fonction::effacerTerminal();
+        
+        if ( modeJeux == 1) {
+        _fonction::affichageGrilleMachine((*grilleMachine), false);
+        }
+        _fonction::affichageGrilleJoueur((*grilleJoueur));
+        
+        _fonction::creuserUneCase((*grilleJoueur), (*grilleMachine));
+        continue;
+        break;       
       default:
         break;
       }
