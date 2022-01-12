@@ -134,14 +134,12 @@ namespace _fonction
     if (avecSautLigneDebut) // Saut de ligne en fin d'ecriture sur l'ecran
       cout << endl;
 
-    _fonction::effacerTerminal();
-    _fonction::afficherContenuFichierTerminal(_constante::fichierLogo);
-    cout << "+=======================================================================================/" << endl;
-
     // Affichage debut jeux
-    if (momentJeu == 0)
+    if (momentJeu == _constante::debutJeux)
     {
-
+      _fonction::effacerTerminal();
+      _fonction::afficherContenuFichierTerminal(_constante::fichierLogo);
+      cout << "+=======================================================================================/" << endl;
       cout << "| Salut " << nomJoueur << "!" << endl;
       cout << "|=======================================================================================/" << endl;
       cout << "|    " << endl;
@@ -169,11 +167,46 @@ namespace _fonction
            << "JOCKER........" << nbrJocker << endl;
       cout << "|    "
            << "JAUGE SANTÉ..." << _fonction::calculerJaugeIndicateurSantePourcentage(sante) << "%" << endl;
+      cout << "|" << endl;
+      cout << "+=======================================================================================/" << endl;
 
     } // Fin affichage debut jeux
 
-    cout << "|" << endl;
-    cout << "+=======================================================================================/" << endl;
+    // Affichage jeux en cours
+    if (momentJeu == _constante::encoursJeux)
+    {
+      cout << endl;
+      cout << "+=======================================================================================/" << endl;
+      cout << "| Joueur: " << nomJoueur << endl;
+      cout << "|=======================================================================================/" << endl;
+      cout << "|    " << endl;
+      cout << "|    "
+           << "MODE.........." << (modeJoueur > 0 ? "Test" : "Normal") << endl;
+      cout << "|    "
+           << "DIFFICULTÉ....";
+      if (force == _constante::forceJeuFacile)
+      {
+        cout << "Facile" << endl;
+      }
+      else if (force == _constante::forceJeuMoyen)
+      {
+        cout << "Moyen" << endl;
+        ;
+      }
+      else if (force == _constante::forceJeuDifficile)
+      {
+        cout << "Difficile" << endl;
+        ;
+      }
+      cout << "|    "
+           << "SCORE........." << score << " pts" << endl;
+      cout << "|    "
+           << "JOCKER........" << nbrJocker << endl;
+      cout << "|    "
+           << "JAUGE SANTÉ..." << _fonction::calculerJaugeIndicateurSantePourcentage(sante) << "%" << endl;
+      cout << "|" << endl;
+
+    } // Fin affichage debut jeux
 
     if (avecSautLigneFin) // Saut de ligne en fin d'ecriture sur l'ecran
       cout << endl;
@@ -201,10 +234,81 @@ namespace _fonction
       joueurnombrePartie += 1;
     }
   }
-  // Affichage d'une grille selon le mode et l'habilitation de la grille
-  void affichageGrilleMachine(_structure::grille uneGrille)
-  {
 
+  // Afficher le menu action joeur
+  int afficherMenuActionJoueur()
+  {
+    int forcePartie;
+    int i(0);
+
+    do
+    {
+      cout << "+=== ACTIONS JOUEUR ====================================================================/" << endl;
+      cout << "|" << endl;
+      cout << "|    TAPEZ " << _constante::forceJeuFacile << ": FACILE" << endl;
+      cout << "|    TAPEZ " << _constante::forceJeuMoyen << ": MOYEN" << endl;
+      cout << "|    TAPEZ " << _constante::forceJeuDifficile << ": DIFFICILE" << endl;
+      cout << "|" << endl;
+      cout << "+=======================================================================================/" << endl;
+      cout << "> Tapez:";
+      cin >> forcePartie;
+      i++;
+    } while (forcePartie < _constante::forceJeuFacile || forcePartie > _constante::forceJeuDifficile);
+
+    return (forcePartie);
+  }
+
+  //
+  void calculerIndicesPresenceMine(_structure::grille &uneGrille)
+  {
+    // Boucle FOR imbriquées
+    for (int i = 0; i < uneGrille.nbrLigne; ++i)
+    {
+      for (int j = 0; j < uneGrille.nbrColonne; ++j)
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        {
+          // cout << "Li:" << i << "-Col:" << j << " / ";
+          //  Nord
+          if (i - 1 > -1 && uneGrille.Tableau[i - 1][j] != _constante::mineCodeMarquage)
+            uneGrille.Tableau[i - 1][j]++;
+
+          // Sud
+          if (i + 1 < _constante::nbrLigneGrilleJeu && uneGrille.Tableau[i + 1][j] != _constante::mineCodeMarquage)
+            uneGrille.Tableau[i + 1][j]++;
+
+          // Est
+          if (j + 1 < _constante::nbrColonneGrilleJeu && uneGrille.Tableau[i][j + 1] != _constante::mineCodeMarquage)
+            uneGrille.Tableau[i][j + 1]++;
+
+          // Ouest
+          if (j - 1 > -1 && uneGrille.Tableau[i][j - 1] != _constante::mineCodeMarquage)
+            uneGrille.Tableau[i][j - 1]++;
+
+          // Nord Ouest
+          if ((i - 1 > -1) && (j - 1 > -1) && (uneGrille.Tableau[i - 1][j - 1] != _constante::mineCodeMarquage))
+            uneGrille.Tableau[i - 1][j - 1]++;
+
+          // Nord Est
+          if ((i - 1 > -1) && (j + 1 < _constante::nbrColonneGrilleJeu) && (uneGrille.Tableau[i - 1][j + 1] != _constante::mineCodeMarquage))
+            uneGrille.Tableau[i - 1][j + 1]++;
+
+          // Sud Ouest
+          if ((i + 1 < _constante::nbrLigneGrilleJeu) && (j - 1 > -1) && (uneGrille.Tableau[i + 1][j - 1] != _constante::mineCodeMarquage))
+            uneGrille.Tableau[i + 1][j - 1]++;
+
+          // Sud Est
+          if ((i + 1 < _constante::nbrLigneGrilleJeu) && (j + 1 < _constante::nbrColonneGrilleJeu) && (uneGrille.Tableau[i + 1][j + 1] != _constante::mineCodeMarquage))
+            uneGrille.Tableau[i + 1][j + 1]++;
+        }
+    }
+    // uneGrille.Tableau[0][7] = 9;
+  }
+
+  // Affichage d'une grille Joueur
+  void affichageGrilleJoueur(_structure::grille &uneGrille)
+  {
+    cout << "++ GRILLE JOUEUR ++";
+    cout << endl;
     cout << endl;
     // Chiffre dessus
     for (int i = 0; i < uneGrille.nbrLigne; i++)
@@ -234,7 +338,7 @@ namespace _fonction
           cout << " |";
         cout << "\t";
 
-        if (uneGrille.Tableau[i][j] == 9)
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
           cout << " ";
         }
@@ -254,7 +358,7 @@ namespace _fonction
           cout << " |";
         cout << "\t";
 
-        if (uneGrille.Tableau[i][j] == 9)
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
           cout << " ";
         }
@@ -274,7 +378,7 @@ namespace _fonction
           cout << i + 1 << "|";
         cout << "\t";
 
-        if (uneGrille.Tableau[i][j] == 9)
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
           cout << "💣";
         }
@@ -294,7 +398,7 @@ namespace _fonction
           cout << " |";
         cout << "\t";
 
-        if (uneGrille.Tableau[i][j] == 9)
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
           cout << " ";
         }
@@ -314,7 +418,150 @@ namespace _fonction
           cout << " |";
         cout << "\t";
 
-        if (uneGrille.Tableau[i][j] == 9)
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        {
+          cout << " ";
+        }
+        else
+        {
+          cout << " ";
+        }
+
+        cout << "\t";
+        cout << "|";
+      }
+      cout << endl;
+    }
+
+    for (int i = 0; i < uneGrille.nbrLigne; i++)
+    {
+      cout << "  ....."
+           << "....."
+           << "..."
+           << "\t";
+    }
+    cout << endl;
+  }
+
+  // Affichage d'une grille Machine
+  void affichageGrilleMachine(_structure::grille &uneGrille)
+  {
+
+    // Calcul des indices de présence voisine de mines
+    _fonction::calculerIndicesPresenceMine(uneGrille);
+
+    cout << "++ GRILLE MACHINE ++";
+    cout << endl;
+    cout << endl;
+    // Chiffre dessus
+    for (int i = 0; i < uneGrille.nbrLigne; i++)
+    {
+      cout << "\t" << i + 1 << "\t";
+    }
+    cout << endl;
+    // Trait dessus
+
+    for (int i = 0; i < uneGrille.nbrLigne; i++)
+    {
+      cout << "  ....."
+           << "....."
+           << "..."
+           << "\t";
+    }
+
+    cout << endl;
+
+    // Ligne verticale
+    for (int i = 0; i < uneGrille.nbrLigne; i++)
+    {
+      // Ligne1
+      for (int j = 0; j < uneGrille.nbrColonne; j++)
+      {
+        if (i % 1 == 0 && j == 0)
+          cout << " |";
+        cout << "\t";
+
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        {
+          cout << " ";
+        }
+        else
+        {
+          cout << " ";
+        }
+
+        cout << "\t";
+        cout << "|";
+      }
+      cout << endl;
+      // Ligne 2
+      for (int j = 0; j < uneGrille.nbrColonne; j++)
+      {
+        if (i % 1 == 0 && j == 0)
+          cout << " |";
+        cout << "\t";
+
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        {
+          cout << " ";
+        }
+        else
+        {
+          cout << " ";
+        }
+
+        cout << "\t";
+        cout << "|";
+      }
+      cout << endl;
+      // Ligne3
+      for (int j = 0; j < uneGrille.nbrColonne; j++)
+      {
+        if (i % 1 == 0 && j == 0)
+          cout << i + 1 << "|";
+        cout << "\t";
+
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        {
+          cout << "💣";
+        }
+        else
+        {
+          cout << uneGrille.Tableau[i][j];
+        }
+
+        cout << "\t";
+        cout << "|";
+      }
+      cout << endl;
+      // Ligne4
+      for (int j = 0; j < uneGrille.nbrColonne; j++)
+      {
+        if (i % 1 == 0 && j == 0)
+          cout << " |";
+        cout << "\t";
+
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
+        {
+          cout << " ";
+        }
+        else
+        {
+          cout << " ";
+        }
+
+        cout << "\t";
+        cout << "|";
+      }
+      cout << endl;
+      // Ligne5
+      for (int j = 0; j < uneGrille.nbrColonne; j++)
+      {
+        if (i % 1 == 0 && j == 0)
+          cout << " |";
+        cout << "\t";
+
+        if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
           cout << " ";
         }
@@ -383,7 +630,7 @@ namespace _fonction
     {
       int x = rand() % (nbrColonne - 1) + 0;                      // Colonne aléatoire
       int y = rand() % (nbrLigne - 1) + 0;                        // Ligne aléatoire
-      grilleMachine.Tableau[x][y] = _constante::mineCodeMarquage; // 100 est le code de présence de mine dans la case
+      grilleMachine.Tableau[x][y] = _constante::mineCodeMarquage; // x est le code de présence de mine dans la case
     }
   }
 
@@ -394,7 +641,7 @@ namespace _fonction
     for (int i = 0; i < uneGrille.nbrLigne; i++)
     {
       for (int j = 0; j < uneGrille.nbrColonne; j++)
-        uneGrille.Tableau[i][j] = 0;
+        uneGrille.Tableau[i][j] = 00;
     }
   }
 
@@ -432,8 +679,8 @@ namespace _fonction
     // Instance de la structure Grille en une grilleJoueur qui comportera tous les éléments visibles et réels de la partie
     _structure::grille *grilleJoueur = _fonction::instancierGrille(_constante::nbrColonneGrilleJeu, _constante::nbrLigneGrilleJeu, _constante::grillePublic);
 
-    (*grilleMachine).Tableau[1][5] = 14;
-    (*grilleJoueur).Tableau[1][5] = 12;
+    //(*grilleMachine).Tableau[1][5] = 14;
+    //(*grilleJoueur).Tableau[1][5] = 12;
 
     // Initialiser la grilleMachine
     initialiserZeroGrille(*grilleMachine);
@@ -446,15 +693,29 @@ namespace _fonction
 
     // Remplir les indices de présence de mines sur la grille grilleMachine
 
-    // cout << (*grilleJoueur).Tableau[1][5] << endl;
-    // cout << (*grilleMachine).Tableau[1][5] << endl;
-
-    // Affichage grilleMachine en mode test
-    if (modeJeux == 1)
+    // Jeux
+    do
     {
+      // Effacer ecran terminal
       _fonction::effacerTerminal();
-      _fonction::affichageGrilleMachine((*grilleMachine));
-    }
+
+      // Affichage grilleMachine en mode test
+      if (modeJeux == 1)
+      {
+
+        _fonction::affichageGrilleMachine((*grilleMachine));
+      }
+
+      // Affichage grilleJoueur
+      _fonction::affichageGrilleJoueur((*grilleJoueur));
+
+      // Affichage des données initiales avant la partie (0 - avant partie, 1 - pendant la partie, 2 - fin de partie)
+      _fonction::afficherDataJeuJoueur(etapeJeux, modeJeux, forceJeu, indicateurSante, pseudo, nombrePartie, nombreJocker, totalScore);
+
+      // Affiche le menu Joueur
+      _fonction::afficherMenuActionJoueur();
+
+    } while (etapeJeux != _constante::finJeux);
   }
 
   // Fin du namespace
