@@ -36,6 +36,24 @@ namespace _fonction
       cout << endl;
   }
 
+  //
+  void quitterJeu(int &etapeJeux)
+  {
+    etapeJeux = _constante::finJeux;
+    _fonction::effacerTerminal();
+    _fonction::afficherContenuFichierTerminal(_constante::fichierAurevoir);
+  }
+
+  //
+  int calculerTempsJeux(time_t tempsDepart)
+  {
+    int nbrseconds;
+    time_t maintenant;
+    maintenant = time(0);
+    // nbrseconds = maintenant - tempsDepart;
+    return (maintenant - tempsDepart);
+  }
+
   // Afficher le menu du joueur
   int afficherModeJoueur()
   {
@@ -128,7 +146,7 @@ namespace _fonction
   }
 
   // Afficher les données utilisateurs selon la situation dans le jeu (0 - avant partie, 1 - pendant la partie, 2 - fin de partie)
-  void afficherDataJeuJoueur(int momentJeu, int modeJoueur, int force, int sante, string nomJoueur, int nbrJeu, int nbrJocker, int score, bool avecSautLigneDebut = false, bool avecSautLigneFin = false)
+  void afficherDataJeuJoueur(int momentJeu, int modeJoueur, int force, int sante, string nomJoueur, int nbrJeu, int nbrJocker, int score, time_t tempsDepart, bool avecSautLigneDebut = false, bool avecSautLigneFin = false)
   {
 
     if (avecSautLigneDebut) // Saut de ligne en fin d'ecriture sur l'ecran
@@ -204,6 +222,8 @@ namespace _fonction
            << "JOCKER........" << nbrJocker << endl;
       cout << "|    "
            << "JAUGE SANTÉ..." << _fonction::calculerJaugeIndicateurSantePourcentage(sante) << "%" << endl;
+      cout << "|    "
+           << "TEMPS JEUX...." << _fonction::calculerTempsJeux(tempsDepart) << " secondes" << endl;
       cout << "|" << endl;
 
     } // Fin affichage debut jeux
@@ -238,24 +258,25 @@ namespace _fonction
   // Afficher le menu action joeur
   int afficherMenuActionJoueur()
   {
-    int forcePartie;
-    int i(0);
+    int actionJoueur;
 
+    cout << "+=== ACTIONS JOUEUR ====================================================================/" << endl;
+    cout << "|" << endl;
+    cout << "|    TAPEZ " << _constante::actionCreuser << ": Creuser une case" << endl;
+    cout << "|    TAPEZ " << _constante::actionPoserDrapeau << ": Poser un drapeau" << endl;
+    cout << "|    TAPEZ " << _constante::actionLeverDrapeau << ": Lever un drapeau" << endl;
+    cout << "|    TAPEZ " << _constante::actionUtiliserJocker << ": Utiliser votre jocker" << endl;
+    cout << "|    TAPEZ " << _constante::actionQuitter << ": Quitter le jeu" << endl;
+    cout << "|" << endl;
+    cout << "+=======================================================================================/" << endl;
     do
     {
-      cout << "+=== ACTIONS JOUEUR ====================================================================/" << endl;
-      cout << "|" << endl;
-      cout << "|    TAPEZ " << _constante::forceJeuFacile << ": FACILE" << endl;
-      cout << "|    TAPEZ " << _constante::forceJeuMoyen << ": MOYEN" << endl;
-      cout << "|    TAPEZ " << _constante::forceJeuDifficile << ": DIFFICILE" << endl;
-      cout << "|" << endl;
-      cout << "+=======================================================================================/" << endl;
       cout << "> Tapez:";
-      cin >> forcePartie;
-      i++;
-    } while (forcePartie < _constante::forceJeuFacile || forcePartie > _constante::forceJeuDifficile);
+      cin >> actionJoueur;
 
-    return (forcePartie);
+    } while (actionJoueur < _constante::actionCreuser || actionJoueur > _constante::actionQuitter);
+
+    return (actionJoueur);
   }
 
   //
@@ -307,6 +328,7 @@ namespace _fonction
   // Affichage d'une grille Joueur
   void affichageGrilleJoueur(_structure::grille &uneGrille)
   {
+    cout << endl;
     cout << "++ GRILLE JOUEUR ++";
     cout << endl;
     cout << endl;
@@ -377,7 +399,7 @@ namespace _fonction
         if (i % 1 == 0 && j == 0)
           cout << i + 1 << "|";
         cout << "\t";
-
+        // Pas de mine
         if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
           cout << "💣";
@@ -710,11 +732,22 @@ namespace _fonction
       _fonction::affichageGrilleJoueur((*grilleJoueur));
 
       // Affichage des données initiales avant la partie (0 - avant partie, 1 - pendant la partie, 2 - fin de partie)
-      _fonction::afficherDataJeuJoueur(etapeJeux, modeJeux, forceJeu, indicateurSante, pseudo, nombrePartie, nombreJocker, totalScore);
+      _fonction::afficherDataJeuJoueur(etapeJeux, modeJeux, forceJeu, indicateurSante, pseudo, nombrePartie, nombreJocker, totalScore, tempsDepart);
 
-      // Affiche le menu Joueur
-      _fonction::afficherMenuActionJoueur();
+      // Afficher les actions
+      int action; // Initilisation action joueur
+      action = _fonction::afficherMenuActionJoueur();
+      switch (action)
+      {
+      case _constante::actionQuitter:
+        _fonction::quitterJeu(etapeJeux);
+        break;
+      case 0:
 
+        break;
+      default:
+        break;
+      }
     } while (etapeJeux != _constante::finJeux);
   }
 

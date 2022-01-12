@@ -49,7 +49,7 @@ int main()
   joueur.forceJeu = _fonction::afficherDemandeForceJeuJoueur(joueur.modeJeux);
 
   // Affichage des données initiales avant la partie (0 - avant partie, 1 - pendant la partie, 2 - fin de partie)
-  _fonction::afficherDataJeuJoueur(joueur.etapeJeux, joueur.modeJeux, joueur.forceJeu, joueur.indicateurSante, joueur.pseudo, joueur.nombrePartie, joueur.nombreJocker, joueur.totalScore);
+  _fonction::afficherDataJeuJoueur(joueur.etapeJeux, joueur.modeJeux, joueur.forceJeu, joueur.indicateurSante, joueur.pseudo, joueur.nombrePartie, joueur.nombreJocker, joueur.totalScore, joueur.chronoStart);
 
   // Débuter la partie ?
   _fonction::debuterNouvellePartie(joueur.modeJeux, joueur.etapeJeux, joueur.nombrePartie);

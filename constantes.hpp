@@ -7,6 +7,7 @@ namespace _constante
 {
 
   const string fichierLogo("logo.txt");           // Fichier Logo
+  const string fichierAurevoir("aurevoir.txt");   // Fichier aurevoir
   const int indicateurSantePlayerDefaut = 640;    // Points santé au début du jeu
   const int scorePlayerDefaut = 6400;             // Score au début du jeu
   const int jockerPlayerDefaut = 1;               // Nbre de Jocker au début du jeu
@@ -21,6 +22,12 @@ namespace _constante
   const int nbrLigneGrilleJeu = 8;                // Constante du nombre de lignes dans une grille du jeu
   const bool grilleHidden = true;                 // Grille privée (non affichée)
   const bool grillePublic = false;                // Grille public (affichée)
-  const int mineCodeMarquage = 9;                 // Marquage case minée
+  const int mineCodeMarquage = 9;                 // Marquage case miné
+  const int actionCreuser = 1;                    // Action joueur
+  const int actionPoserDrapeau = 2;               // Action joueur
+  const int actionLeverDrapeau = 3;               // Action joueur
+  const int actionUtiliserJocker = 4;             // Action joueur
+  const int actionQuitter = 5;                    // Action joueur
+
 }
 #endif
