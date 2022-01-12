@@ -56,11 +56,11 @@ namespace _fonction
   //
   double calculerTempsJeux(time_t tempsDepart)
   {
-    int nbrseconds;
+    double nbrseconds(0.0);
     time_t maintenant;
     maintenant = time(0);
-    // nbrseconds = maintenant - tempsDepart;
-    return ((maintenant - tempsDepart) / 60);
+    nbrseconds = ((double(maintenant - tempsDepart) / 60.0));
+    return (nbrseconds);
   }
 
   //
@@ -241,7 +241,7 @@ namespace _fonction
       cout << "|    "
            << "JAUGE SANTÉ..." << _fonction::calculerJaugeIndicateurSantePourcentage(sante) << "%" << endl;
       cout << "|    "
-           << "TEMPS JEUX...." << _fonction::calculerTempsJeux(tempsDepart) << " secondes" << endl;
+           << "TEMPS JEUX...." << _fonction::calculerTempsJeux(tempsDepart) << " min" << endl;
       cout << "|" << endl;
 
     } // Fin affichage debut jeux
