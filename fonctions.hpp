@@ -9,7 +9,7 @@ namespace _fonction
   // Effacer l'ecran du Terminal
   void effacerTerminal()
   {
-    system("cls");   // Windows
+    // system("cls");   // Windows
     system("clear"); // Linux
   }
 
@@ -69,7 +69,7 @@ namespace _fonction
     if (nombreJocker == 1)
     {
 
-      cout << "ok";
+      // cout << "ok";
     }
   }
 
@@ -199,7 +199,7 @@ namespace _fonction
         ;
       }
       cout << "|    "
-           << "SCORE........." << score << " pts" << endl;
+           << "SCORE........." << score << " pt(s)" << endl;
       cout << "|    "
            << "JOCKER........" << nbrJocker << endl;
       cout << "|    "
@@ -236,13 +236,13 @@ namespace _fonction
         ;
       }
       cout << "|    "
-           << "SCORE........." << score << " pts" << endl;
+           << "SCORE........." << score << " pt(s)" << endl;
       cout << "|    "
            << "JOCKER........" << nbrJocker << endl;
       cout << "|    "
            << "JAUGE SANTÉ..." << _fonction::calculerJaugeIndicateurSantePourcentage(sante) << "%" << endl;
       cout << "|    "
-           << "TEMPS JEUX...." << _fonction::calculerTempsJeux(tempsDepart) << " min" << endl;
+           << "TEMPS JEUX...." << _fonction::calculerTempsJeux(tempsDepart) << " mn" << endl;
       cout << "|" << endl;
 
     } // Fin affichage debut jeux
@@ -254,6 +254,15 @@ namespace _fonction
   // Confirmer Début une nouvelle partie
   void debuterNouvellePartie(int modeJoueur, int &joueuretapeJeux, int &joueurnombrePartie)
   {
+
+    cout << "Appuyer la touche \"ENTRER\" pour démarrer une nouvelle partie!...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
+
+    joueuretapeJeux = _constante::encoursJeux;
+    // Incrémenter le nbr de partie jouée
+    joueurnombrePartie += 1;
+    /*
     string jeCommence;
 
     do
@@ -272,6 +281,7 @@ namespace _fonction
       // Incrémenter le nbr de partie jouée
       joueurnombrePartie += 1;
     }
+    */
   }
 
   // Afficher le menu action joeur
@@ -344,46 +354,104 @@ namespace _fonction
     // uneGrille.Tableau[0][7] = 9;
   }
 
-// Retourner la valeur d'un case d'un grille
-int retournerValeurCase(_structure::grille &uneGrille, int ligne, int colonne)
-{
+  // Retourner la valeur d'un case d'un grille
+  int retournerValeurCase(_structure::grille &uneGrille, int ligne, int colonne)
+  {
+    int valeurRetour(0);
+    valeurRetour = uneGrille.Tableau[ligne][colonne];
+    return (valeurRetour);
+  }
 
+  // Calculer les cases non creusées dans la grille Joueur
+  int retournerNbrCaseEtatIntitial(_structure::grille &uneGrilleJoueur)
+  {
+    int valeur(0);
+    // Boucle FOR imbriquées
+    for (int i = 0; i < uneGrilleJoueur.nbrLigne; i++)
+    {
+      for (int j = 0; j < uneGrilleJoueur.nbrColonne; j++)
+        if (uneGrilleJoueur.Tableau[i][j] == 0)
+          valeur += 1;
+    }
+    return (valeur);
+  }
 
-  
-  return 0;
-}
+  // Calculer les points du joueur à chaqueaction
+  void calculerPointsJoueur(int &totalscore, _structure::grille &uneGrilleJoueur, int indicateurSante, time_t tempsDepart, bool ajout = false)
+  {
 
+    int pointAttribution(0);
+    // Ajouter des points
+    if (ajout)
+    {
+      // On ajoute des points en fonction du nombre du temps, du nombre de cases déjà jouées sur la totalité
+      pointAttribution = 5 * ((_constante::nbrLigneGrilleJeu * _constante::nbrColonneGrilleJeu) - (retournerNbrCaseEtatIntitial(uneGrilleJoueur)));
+      cout << retournerNbrCaseEtatIntitial(uneGrilleJoueur);
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin.get();
+    }
+    else // Enlever des points donc pointAttribution sera négatif si totalscore>=0
+    {
+    }
+    // On recalcule le total score avec pointAttribution
+    totalscore += pointAttribution;
+  }
 
-//
-void creuserUneCase(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine) 
-{
+  // Creuser une case dans grille Joueur et retourner selon situation
+  void creuserUneCase(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine, int &totalscore, int &indicateurSante, int tempsDepart)
+  {
 
-int ligneAction;
-int colonneAction;
-int valeur;
+    int ligneAction;
+    int colonneAction;
+    int valeurCaseJoueur;
+    int valeurCaseMachine;
+    bool actionVide(true);
 
-do
-{
-  cout << "Donnez le numéro de la ligne entre 0 et " << uneGrilleJoueur.nbrLigne << "inclus > ";
-cin >> ligneAction;
-} while (ligneAction < 0 || ligneAction > uneGrilleJoueur.nbrLigne);
+    do
+    {
+      cout << "Tapez ligne entre 1 et " << uneGrilleJoueur.nbrLigne << " inclus > ";
+      cin >> ligneAction;
+    } while (ligneAction < 1 || ligneAction > uneGrilleJoueur.nbrLigne);
 
-do
-{
-  cout << "Donnez le numéro de colonne entre 0 et " << uneGrilleJoueur.nbrColonne << " > ";
-cin >> colonneAction;
-} while (colonneAction < 0 || colonneAction > uneGrilleJoueur.nbrColonne);
+    do
+    {
+      cout << "Tapez colonne entre 1 et " << uneGrilleJoueur.nbrColonne << " inclus > ";
+      cin >> colonneAction;
+    } while (colonneAction < 1 || colonneAction > uneGrilleJoueur.nbrColonne);
 
+    ligneAction -= 1;
+    colonneAction -= 1;
 
-// Retourner la valeur d'une case d'une grille
-valeur = retournerValeurCase(uneGrilleMachine, ligneAction, colonneAction);
+    // Retourner la valeur d'une case d'une grille
+    // Ici on vérifie que ce n'est pas une case déjà creusée ou avec un drapeau
+    valeurCaseJoueur = retournerValeurCase(uneGrilleJoueur, ligneAction, colonneAction);
+    if (valeurCaseJoueur == _constante::grilleJoueurCaseInitiale)
+    {
 
+      // Retourner la valeur d'une case d'une grille
+      // Ici on veut retourner la valeur de la case choisie dans la grille Machine
+      valeurCaseMachine = retournerValeurCase(uneGrilleMachine, ligneAction, colonneAction);
 
-//uneGrilleMachine.Tableau[][]
+      // Si la valeur retounée de la case est différente du marquage numériqued'une mine alors on la creuse
+      if (valeurCaseMachine != _constante::mineCodeMarquage)
+      {
+        // Creuser case sur la grille Joueur
+        uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseCreusee;
+        //_fonction::effacerTerminal();
+        // Ajouter des points
+        _fonction::calculerPointsJoueur(totalscore, uneGrilleJoueur, indicateurSante, tempsDepart, true);
+      }
+    }
+    else
 
+    {
 
-
-}
+      cout << "\nAction impossible aux coordonées (" << ligneAction + 1 << "," << colonneAction + 1 << ")!" << endl
+           << "Appuyer la touche \"ENTRER\" pour continuer...";
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin.get();
+    }
+  }
 
   // Affichage d'une grille Joueur
   void affichageGrilleJoueur(_structure::grille &uneGrille)
@@ -459,23 +527,27 @@ valeur = retournerValeurCase(uneGrilleMachine, ligneAction, colonneAction);
         if (i % 1 == 0 && j == 0)
           cout << i + 1 << "|";
         cout << "\t";
-        
-        if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseInitiale)           
+
+        if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseInitiale)
         {
-          cout << "🟦";
-        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseCreusee)
+          cout << "⬜️";
+        }
+        else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseCreusee)
         {
           cout << "🟩";
-        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseMinee)
+        }
+        else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseMinee)
         {
           cout << "🟥";
-        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseSansMineDrapeauPresent)
+        }
+        else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseSansMineDrapeauPresent)
         {
           cout << "⬇️";
-        } else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseAvecMineDrapeauPresent)
+        }
+        else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseAvecMineDrapeauPresent)
         {
           cout << "⬇️";
-        } 
+        }
 
         cout << "\t";
         cout << "|";
@@ -534,14 +606,8 @@ valeur = retournerValeurCase(uneGrilleMachine, ligneAction, colonneAction);
   }
 
   // Affichage d'une grille Machine
-  void affichageGrilleMachine(_structure::grille &uneGrille, bool indice = true)
+  void affichageGrilleMachine(_structure::grille &uneGrille)
   {
-
-
-if (indice){
-    // Calcul des indices de présence voisine de mines
-    _fonction::calculerIndicesPresenceMine(uneGrille);
-}
 
     cout << "++ GRILLE MACHINE ++";
     cout << endl;
@@ -616,20 +682,30 @@ if (indice){
 
         if (uneGrille.Tableau[i][j] == _constante::mineCodeMarquage)
         {
-          cout << "❌";
+          cout << "🟥";
         }
         else
         {
-          if (uneGrille.Tableau[i][j] == 0) cout << "0️⃣";
-          if (uneGrille.Tableau[i][j] == 1) cout << "1️⃣";
-          if (uneGrille.Tableau[i][j] == 2) cout << "2️⃣";
-          if (uneGrille.Tableau[i][j] == 3) cout << "3️⃣";
-          if (uneGrille.Tableau[i][j] == 4) cout << "4️⃣";
-          if (uneGrille.Tableau[i][j] == 5) cout << "5️⃣";
-          if (uneGrille.Tableau[i][j] == 6) cout << "6️⃣";
-          if (uneGrille.Tableau[i][j] == 7) cout << "7️⃣";
-          if (uneGrille.Tableau[i][j] == 8) cout << "8️⃣";
-          if (uneGrille.Tableau[i][j] == 9) cout << "9️⃣";
+          if (uneGrille.Tableau[i][j] == 0)
+            cout << "0️⃣";
+          if (uneGrille.Tableau[i][j] == 1)
+            cout << "1️⃣";
+          if (uneGrille.Tableau[i][j] == 2)
+            cout << "2️⃣";
+          if (uneGrille.Tableau[i][j] == 3)
+            cout << "3️⃣";
+          if (uneGrille.Tableau[i][j] == 4)
+            cout << "4️⃣";
+          if (uneGrille.Tableau[i][j] == 5)
+            cout << "5️⃣";
+          if (uneGrille.Tableau[i][j] == 6)
+            cout << "6️⃣";
+          if (uneGrille.Tableau[i][j] == 7)
+            cout << "7️⃣";
+          if (uneGrille.Tableau[i][j] == 8)
+            cout << "8️⃣";
+          if (uneGrille.Tableau[i][j] == 9)
+            cout << "9️⃣";
           // cout << uneGrille.Tableau[i][j];
         }
 
@@ -771,29 +847,42 @@ if (indice){
   }
 
   // Initialiser une nouvelle partie de jeu
-  void initialisationJeu(int modeJeux, int forceJeu, time_t &tempsDepart, time_t &tempsFin, int &etapeJeux, int &indicateurSante, string pseudo, int &nombrePartie, int &nombreJocker, int &totalScore)
+  void initialisationJeu(int modeJeux, int forceJeu, time_t &tempsDepart, time_t &tempsFin, int &etapeJeux, int &indicateurSante, string pseudo, int &nombrePartie, int &nombreJocker, int &totalScore, bool &premierPassageEffectue)
   {
+
+    // cout << premierPassageEffectue;
+
     // Départ du chrono
+
     demarrerChronoPartie(tempsDepart);
 
     // Instance de la structure Grille en une grilleMachine qui comportera tous les éléments cachés (mines, les indices de présences de mines)
+
     _structure::grille *grilleMachine = _fonction::instancierGrille(_constante::nbrColonneGrilleJeu, _constante::nbrLigneGrilleJeu);
 
     // Instance de la structure Grille en une grilleJoueur qui comportera tous les éléments visibles et réels de la partie
+
     _structure::grille *grilleJoueur = _fonction::instancierGrille(_constante::nbrColonneGrilleJeu, _constante::nbrLigneGrilleJeu, _constante::grillePublic);
 
-
     // Initialiser la grilleMachine
+
     initialiserZeroGrille(*grilleMachine);
 
     // Initialiser la grilleJoueur
+
     initialiserZeroGrille(*grilleJoueur);
 
     // Remplir la grille grilleMachine
-    minerGrilleMachine((*grilleMachine), forceJeu, (*grilleMachine).nbrColonne, (*grilleMachine).nbrLigne);
 
-    // Remplir les indices de présence de mines sur la grille grilleMachine
+    if (premierPassageEffectue == 0)
+    {
+      _fonction::minerGrilleMachine((*grilleMachine), forceJeu, (*grilleMachine).nbrColonne, (*grilleMachine).nbrLigne);
 
+      // Calcul des indices de présence voisine de mines
+      _fonction::calculerIndicesPresenceMine(*grilleMachine);
+    }
+    // Changement de la variable _constante::premierPassageEffectuee
+    premierPassageEffectue = 1;
     // Jeux
     do
     {
@@ -803,7 +892,6 @@ if (indice){
       // Affichage grilleMachine en mode test
       if (modeJeux == 1)
       {
-
         _fonction::affichageGrilleMachine((*grilleMachine));
       }
 
@@ -816,6 +904,7 @@ if (indice){
       // Afficher les actions
       int action; // Initilisation action joueur
       action = _fonction::afficherMenuActionJoueur();
+
       switch (action)
       {
       case _constante::actionQuitter:
@@ -826,17 +915,18 @@ if (indice){
         _fonction::utiliserJocker(nombreJocker);
         continue;
         break;
-       case _constante::actionCreuser:
+      case _constante::actionCreuser:
         _fonction::effacerTerminal();
-        
-        if ( modeJeux == 1) {
-        _fonction::affichageGrilleMachine((*grilleMachine), false);
+
+        if (modeJeux == 1)
+        {
+          _fonction::affichageGrilleMachine((*grilleMachine));
         }
         _fonction::affichageGrilleJoueur((*grilleJoueur));
-        
-        _fonction::creuserUneCase((*grilleJoueur), (*grilleMachine));
+
+        _fonction::creuserUneCase((*grilleJoueur), (*grilleMachine), totalScore, indicateurSante, tempsDepart);
         continue;
-        break;       
+        break;
       default:
         break;
       }

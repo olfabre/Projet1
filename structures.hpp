@@ -17,6 +17,7 @@ namespace _structure
     int etapeJeux;       // étape d'un joueur dans le jeu
     time_t chronoStart;  // heure de départ d'une partie d'un joueur
     time_t chronoEnd;    // heure de fin d'une partie d'un joueur
+    bool premierPassage; //
   };
 
   // Structure du type grille

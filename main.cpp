@@ -33,6 +33,7 @@ int main()
   joueur.nombrePartie = 0;                                          // Initialisation du nombre de partie
   joueur.nombreJocker = _constante::jockerPlayerDefaut;             // Initialisation du nombre de jocker par defaut
   joueur.etapeJeux = _constante::debutJeux;                         // Initialisation phase du jeu
+  joueur.premierPassage = _constante::premierPassageEffectue;
 
   // Initialisation ecran
   _fonction::effacerTerminal();
@@ -55,9 +56,8 @@ int main()
   _fonction::debuterNouvellePartie(joueur.modeJeux, joueur.etapeJeux, joueur.nombrePartie);
 
   // Initialisation nouvelle partie
-  _fonction::initialisationJeu(joueur.modeJeux, joueur.forceJeu, joueur.chronoStart, joueur.chronoEnd, joueur.etapeJeux, joueur.indicateurSante, joueur.pseudo, joueur.nombrePartie, joueur.nombreJocker, joueur.totalScore);
+  _fonction::initialisationJeu(joueur.modeJeux, joueur.forceJeu, joueur.chronoStart, joueur.chronoEnd, joueur.etapeJeux, joueur.indicateurSante, joueur.pseudo, joueur.nombrePartie, joueur.nombreJocker, joueur.totalScore, joueur.premierPassage);
 
-  // Détruire toutes les allocations dynamiques
   //  Fin de la fonction principale
   return 0;
 }
