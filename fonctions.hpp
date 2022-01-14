@@ -386,15 +386,26 @@ namespace _fonction
     {
       // On ajoute des points en fonction du nombre du temps, du nombre de cases déjà jouées sur la totalité
       pointAttribution = 5 * ((_constante::nbrLigneGrilleJeu * _constante::nbrColonneGrilleJeu) - (retournerNbrCaseEtatIntitial(uneGrilleJoueur)));
-      cout << retournerNbrCaseEtatIntitial(uneGrilleJoueur);
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      cin.get();
     }
     else // Enlever des points donc pointAttribution sera négatif si totalscore>=0
     {
     }
     // On recalcule le total score avec pointAttribution
     totalscore += pointAttribution;
+  }
+
+  void creuserAutour(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine, int ligne, int colonne, int nbrCase)
+  {
+
+    if (nbrCase > 0 && ligne > -1 && ligne < _constante::nbrLigneGrilleJeu && colonne > -1 && colonne < _constante::nbrColonneGrilleJeu && uneGrilleMachine.Tableau[ligne][colonne] != _constante::grilleJoueurCaseMinee && uneGrilleJoueur.Tableau[ligne][colonne] != _constante::grilleJoueurCaseCreusee && uneGrilleJoueur.Tableau[ligne][colonne] != _constante::grilleJoueurCaseSansMineDrapeauPresent && uneGrilleJoueur.Tableau[ligne][colonne] != _constante::grilleJoueurCaseAvecMineDrapeauPresent)
+    {
+
+      _fonction::creuserAutour(uneGrilleJoueur, uneGrilleMachine, ligne - 1, colonne, nbrCase - 1);
+      _fonction::creuserAutour(uneGrilleJoueur, uneGrilleMachine, ligne, colonne + 1, nbrCase - 1);
+      _fonction::creuserAutour(uneGrilleJoueur, uneGrilleMachine, ligne + 1, colonne, nbrCase - 1);
+      _fonction::creuserAutour(uneGrilleJoueur, uneGrilleMachine, ligne, colonne - 1, nbrCase - 1);
+      uneGrilleJoueur.Tableau[ligne][colonne] = uneGrilleMachine.Tableau[ligne][colonne];
+    }
   }
 
   // Creuser une case dans grille Joueur et retourner selon situation
@@ -435,10 +446,9 @@ namespace _fonction
       // Si la valeur retounée de la case est différente du marquage numériqued'une mine alors on la creuse
       if (valeurCaseMachine != _constante::mineCodeMarquage)
       {
-        // Creuser case sur la grille Joueur
-        uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseCreusee;
-        //_fonction::effacerTerminal();
-        // Ajouter des points
+
+        // On appelle une fonction récursive creuserAutour()
+        _fonction::creuserAutour(uneGrilleJoueur, uneGrilleMachine, ligneAction, colonneAction, 3);
         _fonction::calculerPointsJoueur(totalscore, uneGrilleJoueur, indicateurSante, tempsDepart, true);
       }
     }
@@ -530,12 +540,45 @@ namespace _fonction
 
         if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseInitiale)
         {
-          cout << "⬜️";
+          cout << "⬛️";
         }
-        else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseCreusee)
+        else if (uneGrille.Tableau[i][j] == 0)
         {
-          cout << "🟩";
+          cout << "0️⃣";
         }
+        else if (uneGrille.Tableau[i][j] == 1)
+        {
+          cout << "1️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 2)
+        {
+          cout << "2️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 3)
+        {
+          cout << "3️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 4)
+        {
+          cout << "4️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 5)
+        {
+          cout << "5️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 6)
+        {
+          cout << "6️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 7)
+        {
+          cout << "7️⃣";
+        }
+        else if (uneGrille.Tableau[i][j] == 8)
+        {
+          cout << "8️⃣";
+        }
+
         else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseMinee)
         {
           cout << "🟥";
@@ -814,13 +857,13 @@ namespace _fonction
   }
 
   // Remettre à zéro une grille
-  void initialiserZeroGrille(_structure::grille &uneGrille)
+  void initialiserZeroGrille(_structure::grille &uneGrille, int valeurPardefaut)
   {
     // Boucle FOR imbriquées
     for (int i = 0; i < uneGrille.nbrLigne; i++)
     {
       for (int j = 0; j < uneGrille.nbrColonne; j++)
-        uneGrille.Tableau[i][j] = 0;
+        uneGrille.Tableau[i][j] = valeurPardefaut;
     }
   }
 
@@ -866,11 +909,11 @@ namespace _fonction
 
     // Initialiser la grilleMachine
 
-    initialiserZeroGrille(*grilleMachine);
+    initialiserZeroGrille(*grilleMachine, 0);
 
     // Initialiser la grilleJoueur
 
-    initialiserZeroGrille(*grilleJoueur);
+    initialiserZeroGrille(*grilleJoueur, 10);
 
     // Remplir la grille grilleMachine
 

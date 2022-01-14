@@ -28,11 +28,11 @@ namespace _constante
   const int actionLeverDrapeau = 3;               // Action joueur
   const int actionUtiliserJocker = 4;             // Action joueur
   const int actionQuitter = 5;                    // Action joueur
-  const int grilleJoueurCaseInitiale = 0;         // pas de mine et la case n’est pas encore creusée
-  const int grilleJoueurCaseCreusee = 1;          // pas de mine et la case a été creusée
+  const int grilleJoueurCaseInitiale = 10;        // pas de mine et la case n’est pas encore creusée
+  const int grilleJoueurCaseCreusee = 40;         // pas de mine et la case a été creusée
   const int grilleJoueurCaseMinee = 9;            // mine et la case a été creusée
-  const int grilleJoueurCaseSansMineDrapeauPresent = 2;
-  const int grilleJoueurCaseAvecMineDrapeauPresent = 3;
+  const int grilleJoueurCaseSansMineDrapeauPresent = 20;
+  const int grilleJoueurCaseAvecMineDrapeauPresent = 30;
   const int coefficientAttributionPoint = 50;
   const bool premierPassageEffectue = 0; // Pour ne pas recalculer certaines données
 }
