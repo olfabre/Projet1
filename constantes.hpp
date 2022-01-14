@@ -8,7 +8,8 @@ namespace _constante
 
   const string fichierLogo("logo.txt");           // Fichier Logo
   const string fichierAurevoir("aurevoir.txt");   // Fichier aurevoir
-  const int indicateurSantePlayerDefaut = 640;    // Points santé au début du jeu
+  const string fichierBoom("boom.txt");           // Fichier mine qui explose
+  const int indicateurSantePlayerDefaut = 100;    // Points santé au début du jeu
   const int scorePlayerDefaut = 0;                // Score au début du jeu
   const int jockerPlayerDefaut = 1;               // Nbre de Jocker au début du jeu
   const int forceJeuFacile = 0;                   // Constante difficulté du jeu à facile

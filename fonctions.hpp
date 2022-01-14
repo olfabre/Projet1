@@ -6,6 +6,25 @@ using namespace std;
 namespace _fonction
 {
 
+  int calculerNbrMines(int forceJeu, int nbrColonne, int nbrLigne)
+  {
+    int nbrMines;
+    if (forceJeu == _constante::forceJeuFacile)
+    {
+      nbrMines = (nbrColonne * nbrLigne) / (nbrColonne + nbrLigne);
+    }
+    else if (forceJeu == _constante::forceJeuMoyen)
+    {
+      nbrMines = ((nbrColonne * nbrLigne) / (nbrColonne)) + 1;
+    }
+    else if (forceJeu == _constante::forceJeuDifficile)
+    {
+      nbrMines = ((nbrColonne * nbrLigne) / (nbrColonne / 2));
+    }
+
+    return (nbrMines);
+  }
+
   // Effacer l'ecran du Terminal
   void effacerTerminal()
   {
@@ -66,10 +85,38 @@ namespace _fonction
   //
   void utiliserJocker(_structure::grille &uneGrilleMachine, _structure::grille &uneGrilleJoueur, int &nombreJocker)
   {
+    int nbrLigne = _constante::nbrLigneGrilleJeu;
+    int nbrColonne = _constante::nbrColonneGrilleJeu;
+
     if (nombreJocker == 1)
     {
 
+      // On va donner les coordonnées d'une mine quand c'est possible
+      // Boucle FOR imbssriquées
+      for (int i = 0; i < uneGrilleMachine.nbrLigne; i++)
+      {
+        for (int j = 0; j < uneGrilleMachine.nbrColonne; j++)
+          if (uneGrilleMachine.Tableau[i][j] == _constante::mineCodeMarquage)
+          {
+            if (uneGrilleJoueur.Tableau[i][j] == _constante::grilleJoueurCaseInitiale)
+            {
+              if (nombreJocker == 1)
+
+              {
+                uneGrilleJoueur.Tableau[i][j] = _constante::mineCodeMarquage;
+                nombreJocker = 0;
+              }
+            }
+          }
+      }
       // cout << "ok";
+    }
+    else
+    {
+      cout << "\nAction impossible!" << endl
+           << "Appuyer la touche \"ENTRER\" pour continuer...";
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin.get();
     }
   }
 
@@ -200,8 +247,11 @@ namespace _fonction
       }
       cout << "|    "
            << "SCORE........." << score << " pt(s)" << endl;
-      cout << "|    "
-           << "JOCKER........" << nbrJocker << endl;
+      if (force != _constante::forceJeuFacile)
+      {
+        cout << "|    "
+             << "JOCKER........" << nbrJocker << endl;
+      }
       cout << "|    "
            << "JAUGE SANTÉ..." << _fonction::calculerJaugeIndicateurSantePourcentage(sante) << "%" << endl;
       cout << "|" << endl;
@@ -380,10 +430,11 @@ namespace _fonction
   }
 
   // Calculer les points du joueur à chaqueaction
-  void calculerPointsJoueur(int &totalscore, _structure::grille &uneGrilleJoueur, int indicateurSante, time_t tempsDepart, bool ajout = false)
+  void calculerPointsJoueur(int &totalscore, _structure::grille &uneGrilleJoueur, int &indicateurSante, time_t tempsDepart, int forceJeu, bool ajout = false)
   {
 
     int pointAttribution(0);
+    int nbrMines(0);
     // Ajouter des points
     if (ajout)
     {
@@ -392,9 +443,12 @@ namespace _fonction
     }
     else // Enlever des points donc pointAttribution sera négatif si totalscore>=0
     {
-    }
+      nbrMines = _fonction::calculerNbrMines(forceJeu, _constante::nbrColonneGrilleJeu, _constante::nbrLigneGrilleJeu);
+      pointAttribution = -(100 / nbrMines);
+        }
     // On recalcule le total score avec pointAttribution
     totalscore += pointAttribution;
+    indicateurSante += pointAttribution;
   }
 
   void deposerEnleverToogleDrapeau(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine)
@@ -466,7 +520,7 @@ namespace _fonction
   }
 
   // Creuser une case dans grille Joueur et retourner selon situation
-  void creuserUneCase(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine, int &totalscore, int &indicateurSante, int tempsDepart)
+  void creuserUneCase(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine, int &totalscore, int &indicateurSante, int tempsDepart, int forceJeu)
   {
 
     int ligneAction;
@@ -506,7 +560,21 @@ namespace _fonction
 
         // On appelle une fonction récursive creuserAutour()
         _fonction::creuserAutour(uneGrilleJoueur, uneGrilleMachine, ligneAction, colonneAction, 3);
-        _fonction::calculerPointsJoueur(totalscore, uneGrilleJoueur, indicateurSante, tempsDepart, true);
+        _fonction::calculerPointsJoueur(totalscore, uneGrilleJoueur, indicateurSante, tempsDepart, forceJeu, true);
+      }
+
+      // Si la valeur retounée de la case est un marquage numérique d'une mine alors on la creuse
+      if (valeurCaseMachine == _constante::mineCodeMarquage)
+      {
+        uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseMinee;
+        _fonction::effacerTerminal();
+        _fonction::afficherContenuFichierTerminal(_constante::fichierBoom);
+        _fonction::calculerPointsJoueur(totalscore, uneGrilleJoueur, indicateurSante, tempsDepart, forceJeu);
+        cout << endl
+             << endl
+             << "Appuyer la touche \"ENTRER\" pour continuer...";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
       }
     }
     else
@@ -876,25 +944,6 @@ namespace _fonction
     tempsFin = time(0);
   }
 
-  int calculerNbrMines(int forceJeu, int nbrColonne, int nbrLigne)
-  {
-    int nbrMines;
-    if (forceJeu == _constante::forceJeuFacile)
-    {
-      nbrMines = (nbrColonne * nbrLigne) / (nbrColonne + nbrLigne);
-    }
-    else if (forceJeu == _constante::forceJeuMoyen)
-    {
-      nbrMines = ((nbrColonne * nbrLigne) / (nbrColonne)) + 1;
-    }
-    else if (forceJeu == _constante::forceJeuDifficile)
-    {
-      nbrMines = ((nbrColonne * nbrLigne) / (nbrColonne / 2));
-    }
-
-    return (nbrMines);
-  }
-
   // Remplir la grille de mines de façon aléatoire et selon la difficulté
   void minerGrilleMachine(_structure::grille &grilleMachine, int forceJeu, int nbrColonne, int nbrLigne)
   {
@@ -1031,7 +1080,7 @@ namespace _fonction
         }
         _fonction::affichageGrilleJoueur((*grilleJoueur));
 
-        _fonction::creuserUneCase((*grilleJoueur), (*grilleMachine), totalScore, indicateurSante, tempsDepart);
+        _fonction::creuserUneCase((*grilleJoueur), (*grilleMachine), totalScore, indicateurSante, tempsDepart, forceJeu);
         continue;
         break;
       case _constante::actionPoserDrapeau:
