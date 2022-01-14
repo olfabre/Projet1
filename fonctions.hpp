@@ -64,7 +64,7 @@ namespace _fonction
   }
 
   //
-  void utiliserJocker(int &nombreJocker)
+  void utiliserJocker(_structure::grille &uneGrilleMachine, _structure::grille &uneGrilleJoueur, int &nombreJocker)
   {
     if (nombreJocker == 1)
     {
@@ -285,7 +285,7 @@ namespace _fonction
   }
 
   // Afficher le menu action joeur
-  int afficherMenuActionJoueur()
+  int afficherMenuActionJoueur(int forceJeu)
   {
     int actionJoueur;
 
@@ -294,7 +294,10 @@ namespace _fonction
     cout << "|    TAPEZ " << _constante::actionCreuser << ": Creuser une case" << endl;
     cout << "|    TAPEZ " << _constante::actionPoserDrapeau << ": Poser un drapeau" << endl;
     cout << "|    TAPEZ " << _constante::actionLeverDrapeau << ": Lever un drapeau" << endl;
-    cout << "|    TAPEZ " << _constante::actionUtiliserJocker << ": Utiliser votre jocker" << endl;
+    if (forceJeu != _constante::forceJeuFacile)
+    {
+      cout << "|    TAPEZ " << _constante::actionUtiliserJocker << ": Utiliser votre jocker" << endl;
+    }
     cout << "|    TAPEZ " << _constante::actionQuitter << ": Quitter le jeu" << endl;
     cout << "|" << endl;
     cout << "+=======================================================================================/" << endl;
@@ -385,13 +388,67 @@ namespace _fonction
     if (ajout)
     {
       // On ajoute des points en fonction du nombre du temps, du nombre de cases déjà jouées sur la totalité
-      pointAttribution = 5 * ((_constante::nbrLigneGrilleJeu * _constante::nbrColonneGrilleJeu) - (retournerNbrCaseEtatIntitial(uneGrilleJoueur)));
+      pointAttribution = (5 - (_fonction::calculerTempsJeux(tempsDepart))) * ((_constante::nbrLigneGrilleJeu * _constante::nbrColonneGrilleJeu) - (_fonction::retournerNbrCaseEtatIntitial(uneGrilleJoueur)));
     }
     else // Enlever des points donc pointAttribution sera négatif si totalscore>=0
     {
     }
     // On recalcule le total score avec pointAttribution
     totalscore += pointAttribution;
+  }
+
+  void deposerEnleverToogleDrapeau(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine)
+  {
+    int ligneAction;
+    int colonneAction;
+    int valeurCaseJoueur;
+    int valeurCaseMachine;
+    do
+    {
+      cout << "Tapez ligne entre 1 et " << uneGrilleJoueur.nbrLigne << " inclus > ";
+      cin >> ligneAction;
+    } while (ligneAction < 1 || ligneAction > uneGrilleJoueur.nbrLigne);
+
+    do
+    {
+      cout << "Tapez colonne entre 1 et " << uneGrilleJoueur.nbrColonne << " inclus > ";
+      cin >> colonneAction;
+    } while (colonneAction < 1 || colonneAction > uneGrilleJoueur.nbrColonne);
+
+    ligneAction -= 1;
+    colonneAction -= 1;
+
+    // Retourner la valeur d'une case d'une grille
+    // Ici on vérifie que ce n'est pas une case déjà creusée
+    valeurCaseJoueur = retournerValeurCase(uneGrilleJoueur, ligneAction, colonneAction);
+    if (valeurCaseJoueur == _constante::grilleJoueurCaseInitiale)
+    {
+      valeurCaseMachine = retournerValeurCase(uneGrilleMachine, ligneAction, colonneAction);
+      if (valeurCaseMachine == 9)
+      {
+        uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseAvecMineDrapeauPresent;
+      }
+      else
+      {
+        uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseSansMineDrapeauPresent;
+      }
+    }
+    else if (valeurCaseJoueur == _constante::grilleJoueurCaseSansMineDrapeauPresent)
+    {
+      uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseInitiale;
+    }
+    else if (valeurCaseJoueur == _constante::grilleJoueurCaseAvecMineDrapeauPresent)
+    {
+      uneGrilleJoueur.Tableau[ligneAction][colonneAction] = _constante::grilleJoueurCaseInitiale;
+    }
+    else
+    {
+
+      cout << "\nAction impossible aux coordonées (" << ligneAction + 1 << "," << colonneAction + 1 << ")!" << endl
+           << "Appuyer la touche \"ENTRER\" pour continuer...";
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin.get();
+    }
   }
 
   void creuserAutour(_structure::grille &uneGrilleJoueur, _structure::grille &uneGrilleMachine, int ligne, int colonne, int nbrCase)
@@ -585,11 +642,11 @@ namespace _fonction
         }
         else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseSansMineDrapeauPresent)
         {
-          cout << "⬇️";
+          cout << "🚩";
         }
         else if (uneGrille.Tableau[i][j] == _constante::grilleJoueurCaseAvecMineDrapeauPresent)
         {
-          cout << "⬇️";
+          cout << "🚩";
         }
 
         cout << "\t";
@@ -946,7 +1003,7 @@ namespace _fonction
 
       // Afficher les actions
       int action; // Initilisation action joueur
-      action = _fonction::afficherMenuActionJoueur();
+      action = _fonction::afficherMenuActionJoueur(forceJeu);
 
       switch (action)
       {
@@ -955,7 +1012,14 @@ namespace _fonction
         _fonction::detructionAllocationMemoire((*grilleJoueur), (*grilleMachine));
         break;
       case _constante::actionUtiliserJocker:
-        _fonction::utiliserJocker(nombreJocker);
+        _fonction::effacerTerminal();
+
+        if (modeJeux == 1)
+        {
+          _fonction::affichageGrilleMachine((*grilleMachine));
+        }
+        _fonction::affichageGrilleJoueur((*grilleJoueur));
+        _fonction::utiliserJocker((*grilleMachine), (*grilleJoueur), nombreJocker);
         continue;
         break;
       case _constante::actionCreuser:
@@ -970,6 +1034,29 @@ namespace _fonction
         _fonction::creuserUneCase((*grilleJoueur), (*grilleMachine), totalScore, indicateurSante, tempsDepart);
         continue;
         break;
+      case _constante::actionPoserDrapeau:
+        _fonction::effacerTerminal();
+
+        if (modeJeux == 1)
+        {
+          _fonction::affichageGrilleMachine((*grilleMachine));
+        }
+        _fonction::affichageGrilleJoueur((*grilleJoueur));
+        _fonction::deposerEnleverToogleDrapeau((*grilleJoueur), (*grilleMachine));
+        continue;
+        break;
+      case _constante::actionLeverDrapeau:
+        _fonction::effacerTerminal();
+
+        if (modeJeux == 1)
+        {
+          _fonction::affichageGrilleMachine((*grilleMachine));
+        }
+        _fonction::affichageGrilleJoueur((*grilleJoueur));
+        _fonction::deposerEnleverToogleDrapeau((*grilleJoueur), (*grilleMachine));
+        continue;
+        break;
+
       default:
         break;
       }
